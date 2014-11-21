@@ -1,0 +1,11 @@
+module Pandexio
+
+  class SigningAlgorithms
+    PDX_HMAC_MD5 = "PDX-HMAC-MD5"
+    PDX_HMAC_SHA1 = "PDX-HMAC-SHA1"
+    PDX_HMAC_SHA256 = "PDX-HMAC-SHA256"
+    PDX_HMAC_SHA384 = "PDX-HMAC-SHA384"
+    PDX_HMAC_SHA512 = "PDX-HMAC-SHA512"
+  end
+
+end
