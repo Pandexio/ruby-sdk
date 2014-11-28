@@ -8,7 +8,7 @@ module Pandexio
       @domain_key = params.fetch(:domain_key, nil)
       @date = params.fetch(:date, nil)
       @expires = params.fetch(:expires, nil)
-      @name = params.fetch(:name, nil)
+      @email_address = params.fetch(:email_address, nil)
       @display_name = params.fetch(:display_name, nil)
       @thumbnail = params.fetch(:thumbnail, nil)
     end
@@ -19,7 +19,7 @@ module Pandexio
     attr_accessor :domain_key
     attr_accessor :date
     attr_accessor :expires
-    attr_accessor :name
+    attr_accessor :email_address
     attr_accessor :display_name
     attr_accessor :thumbnail
 

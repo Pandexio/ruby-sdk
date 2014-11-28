@@ -20,7 +20,7 @@ describe Pandexio do
       :domain_key => "asdfjklqwerzxcv",
       :date => date,
       :expires => 90,
-      :name => "Anonymous",
+      :email_address => "Anonymous",
       :display_name => "Anonymous")
 
     @authorized_request = Pandexio::to_authorized_request(normalized_request, signing_options)
@@ -28,7 +28,7 @@ describe Pandexio do
 
   describe "#header_signing" do
     it "returns the correct authorization header" do
-      @authorized_request.headers["Authorization"].must_equal "PDX-HMAC-SHA256 Credential=1234567890, SignedHeaders=host;sample, Signature=6d39550f83d63503ca4c0d455f8e0c134e50bc9174e6ae98a77df6aa05bdcd61"
+      @authorized_request.headers["Authorization"].must_equal "PDX-HMAC-SHA256 Credential=1234567890, SignedHeaders=host;sample;x-pdx-date;x-pdx-displayname;x-pdx-emailaddress;x-pdx-expires, Signature=0216b89e5103e39996f3f1bf71ed27855c6031ad87db197327627ee2130f102b"
     end
   end
 end

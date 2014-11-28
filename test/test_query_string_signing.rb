@@ -20,7 +20,7 @@ describe Pandexio do
       :domain_key => "asdfjklqwerzxcv",
       :date => date,
       :expires => 90,
-      :name => "Anonymous",
+      :email_address => "Anonymous",
       :display_name => "Anonymous")
 
     @authorized_request = Pandexio::to_authorized_request(normalized_request, signing_options)
@@ -37,7 +37,7 @@ describe Pandexio do
       @authorized_request.query_parameters["X-Pdx-SignedHeaders"].must_equal "host;sample"
     end
     it "returns the correct signature as a query parameter" do
-      @authorized_request.query_parameters["X-Pdx-Signature"].must_equal "6d39550f83d63503ca4c0d455f8e0c134e50bc9174e6ae98a77df6aa05bdcd61"
+      @authorized_request.query_parameters["X-Pdx-Signature"].must_equal "d86919fe9e52bcf00e903963566cabcd7d4432c8315bad0eda5edf103ac6317f"
     end
   end
 end

@@ -13,7 +13,7 @@ module Pandexio
     # Used by "headers" and "query_parameters"
     DATE = "X-Pdx-Date"
     EXPIRES = "X-Pdx-Expires"
-    NAME = "X-Pdx-Name"
+    EMAIL_ADDRESS = "X-Pdx-EmailAddress"
     DISPLAY_NAME = "X-Pdx-DisplayName"
     THUMBNAIL = "X-Pdx-Thumbnail"
   end

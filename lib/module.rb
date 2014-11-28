@@ -13,21 +13,8 @@ module Pandexio
   private_constant :LINE_BREAK
   
   private
-  
-  def self.append_metadata(parameters, signing_options)
 
-      parameters[SigningAttributes::DATE] = signing_options.date.iso8601
-      parameters[SigningAttributes::EXPIRES] = signing_options.expires
-      parameters[SigningAttributes::NAME] = signing_options.name
-      parameters[SigningAttributes::DISPLAY_NAME] = signing_options.display_name
-
-      if !signing_options.thumbnail.nil? && signing_options.thumbnail.is_a?(String) && !signing_options.thumbnail.empty?
-        parameters[SigningAttributes::THUMBNAIL] = signing_options.thumbnail
-      end
-
-  end
-
-  def self.ordinal_sort(a, b)
+  def self.ordinal_key_value_sort(a, b)
 
     a_codepoints, b_codepoints = a[0].codepoints, b[0].codepoints
 
@@ -48,7 +35,7 @@ module Pandexio
 
     temp_query_parameters = query_parameters.dup
 
-    query_sort = ->(a,b) { ordinal_sort(a, b) }
+    query_sort = ->(a,b) { ordinal_key_value_sort(a, b) }
     temp_query_parameters = temp_query_parameters.sort(&query_sort)
 
     canonical_query_string = StringIO.new
@@ -70,7 +57,7 @@ module Pandexio
       temp_headers[key.downcase.strip] = value
     end
 
-    header_sort = ->(a,b) { ordinal_sort(a, b) }
+    header_sort = ->(a,b) { ordinal_key_value_sort(a, b) }
     temp_headers = temp_headers.sort(&header_sort)
 
     canonical_headers, signed_headers = StringIO.new, StringIO.new
@@ -86,31 +73,24 @@ module Pandexio
 
   end
 
-  def self.generate_signature(domain_key, algorithm, date, request)
+  def self.build_canonical_payload(payload, digest)
+    return digest.hexdigest(payload)
+  end
 
-    digest = case algorithm
-      when SigningAlgorithms::PDX_HMAC_MD5; Digest::MD5
-      when SigningAlgorithms::PDX_HMAC_SHA1; Digest::SHA1
-      when SigningAlgorithms::PDX_HMAC_SHA256; Digest::SHA256
-      when SigningAlgorithms::PDX_HMAC_SHA384; Digest::SHA384
-      when SigningAlgorithms::PDX_HMAC_SHA512; Digest::SHA512
-      else raise 'Invalid signing algorithm'
-    end
-
-    # create canonical request
+  def self.build_canonical_request(request, digest)
     canonical_query_string = build_canonical_query_string(request.query_parameters)
     canonical_headers, signed_headers = build_canonical_headers(request.headers)
-    canonical_payload = digest.hexdigest(request.payload)
+    canonical_payload = build_canonical_payload(request.payload, digest)
     canonical_request = "#{request.method}#{LINE_BREAK}#{request.path}#{LINE_BREAK}#{canonical_query_string}#{LINE_BREAK}#{canonical_headers}#{LINE_BREAK}#{signed_headers}#{LINE_BREAK}#{canonical_payload}"
+    return canonical_request, signed_headers
+  end
 
-    # create string to sign
-    string_to_sign = "#{algorithm}#{LINE_BREAK}#{date.iso8601}#{LINE_BREAK}#{canonical_request}"
+  def self.build_string_to_sign(canonical_request, signing_options)
+    return "#{signing_options.algorithm}#{LINE_BREAK}#{signing_options.date.iso8601}#{LINE_BREAK}#{canonical_request}"
+  end
 
-    # generate signature
-    signature = Digest::HMAC.hexdigest(string_to_sign, domain_key, digest)
-
-    return signature, signed_headers
-
+  def self.generate_signature(string_to_sign, signing_options, digest)
+    return Digest::HMAC.hexdigest(string_to_sign, signing_options.domain_key, digest)
   end
 
   public
@@ -121,41 +101,44 @@ module Pandexio
     raise ArgumentError, 'normalized_request.query_parameters must be of type Hash and cannot be nil' unless !normalized_request.query_parameters.nil? && normalized_request.query_parameters.is_a?(Hash)
     raise ArgumentError, 'normalized_request.headers must be of type Hash and cannot be nil' unless !normalized_request.headers.nil? && normalized_request.headers.is_a?(Hash)
     raise ArgumentError, 'normalized_request already contains authorization details' unless
-      normalized_request.query_parameters[SigningAttributes::SIGNATURE].nil? &&
-      normalized_request.headers[SigningAttributes::AUTHORIZATION].nil?
+      normalized_request.query_parameters[SigningAttributes::SIGNATURE].nil? && normalized_request.headers[SigningAttributes::AUTHORIZATION].nil?
+
     raise ArgumentError, 'signing_options must be of type Pandexio::SigningOptions cannot be nil' unless !signing_options.nil? && signing_options.is_a?(SigningOptions)
     raise ArgumentError, 'signing_options.domain_id must be of type String and cannot be nil or empty' unless !signing_options.domain_id.nil? && signing_options.domain_id.is_a?(String) && !signing_options.domain_id.empty?
     raise ArgumentError, 'signing_options.domain_key must be of type String and cannot be nil or empty' unless !signing_options.domain_key.nil? && signing_options.domain_key.is_a?(String) && !signing_options.domain_key.empty?
-    raise ArgumentError, 'signing_options.algorithm must be of type String and cannot be nil or empty' unless !signing_options.algorithm.nil? && signing_options.algorithm.is_a?(String) && !signing_options.algorithm.empty?
-    raise ArgumentError, 'signing_options.mechanism must be of type String and cannot be nil or empty' unless !signing_options.mechanism.nil? && signing_options.mechanism.is_a?(String) && !signing_options.mechanism.empty?
+    raise ArgumentError, 'signing_options.algorithm must be of type String and cannot be nil or empty' unless SigningAlgorithms.is_v(signing_options.algorithm)
+    raise ArgumentError, 'signing_options.mechanism must be a valid signing mechanism' unless SigningMechanisms.is_v(signing_options.mechanism)
     raise ArgumentError, 'signing_options.date must be of type Time and cannot be nil' unless !signing_options.date.nil? && signing_options.date.is_a?(Time)
     raise ArgumentError, 'signing_options.expires must be of type Fixnum and cannot be nil or empty' unless !signing_options.expires.nil? && signing_options.expires.is_a?(Fixnum) && signing_options.expires > 0
-    raise ArgumentError, 'signing_options.name must be of type String and cannot be nil or empty' unless !signing_options.name.nil? && signing_options.name.is_a?(String)  && !signing_options.name.empty?
+    raise ArgumentError, 'signing_options.email_address must be of type String and cannot be nil or empty' unless !signing_options.email_address.nil? && signing_options.email_address.is_a?(String)  && !signing_options.email_address.empty?
     raise ArgumentError, 'signing_options.display_name must be of type String and cannot be nil or empty' unless !signing_options.display_name.nil? && signing_options.display_name.is_a?(String)  && !signing_options.display_name.empty?
 
     authorized_request = normalized_request.dup
 
-    signature, signed_headers = generate_signature(signing_options.domain_key, signing_options.algorithm, signing_options.date, authorized_request)
+    append = -> (p) do
+      p[SigningAttributes::DATE] = signing_options.date.iso8601
+      p[SigningAttributes::EXPIRES] = signing_options.expires
+      p[SigningAttributes::EMAIL_ADDRESS] = signing_options.email_address
+      p[SigningAttributes::DISPLAY_NAME] = signing_options.display_name
+      p[SigningAttributes::THUMBNAIL] = signing_options.thumbnail if !signing_options.thumbnail.nil? && signing_options.thumbnail.is_a?(String) && !signing_options.thumbnail.empty?
+    end
+
+    append.call(
+      signing_options.mechanism == SigningMechanisms::QUERY_STRING ? authorized_request.query_parameters :
+      signing_options.mechanism == SigningMechanisms::HEADER ? authorized_request.headers : {})
+    
+    digest = SigningAlgorithms.to_d(signing_options.algorithm)
+    canonical_request, signed_headers = build_canonical_request(authorized_request, digest)
+    string_to_sign = build_string_to_sign(canonical_request, signing_options)
+    signature = generate_signature(string_to_sign, signing_options, digest)
 
     if signing_options.mechanism == SigningMechanisms::QUERY_STRING
-
-      append_metadata(authorized_request.query_parameters, signing_options)
-
       authorized_request.query_parameters[SigningAttributes::ALGORITHM] = signing_options.algorithm
       authorized_request.query_parameters[SigningAttributes::CREDENTIAL] = signing_options.domain_id
       authorized_request.query_parameters[SigningAttributes::SIGNED_HEADERS] = signed_headers
       authorized_request.query_parameters[SigningAttributes::SIGNATURE] = signature
-
     elsif signing_options.mechanism == SigningMechanisms::HEADER
-
-      append_metadata(authorized_request.headers, signing_options)
-
       authorized_request.headers[SigningAttributes::AUTHORIZATION] = "#{signing_options.algorithm} Credential=#{signing_options.domain_id}, SignedHeaders=#{signed_headers}, Signature=#{signature}"
-
-    else
-
-      raise "signing_options.mechanism must be either 'QueryString' or 'Headers'"
-
     end
 
     return authorized_request
