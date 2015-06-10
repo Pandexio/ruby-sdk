@@ -1,17 +1,7 @@
 #Pandexio SDK for Ruby
-========
 
 ##Overview
 This Pandexio SDK enables Ruby server applications to easily generate signed requests that can be consumed by the Pandexio REST API (https://platform.pandexio.com) and the Pandexio Hosted Model (https://hosted.pandexio.com).
-
-##Signing a Request
-
-Take the following steps to create a signed Pandexio request.
-
-1. Create an instance of Pandexio::Request containing details of the request to be made, the *normalized_request*.
-2. Create an instance of Pandexio::SigningOptions. These *signing_options* specify the SDK will sign the request.
-3. Call Pandexio::to_authorized_request, passing in the *normalized_request* and the *signing_options*.
-4. Build an HTTP request using the Pandexio::Request, *authorized_request*, returned by Pandexio::to_authorized_request and make the HTTP request using the HTTP client of choice.
 
 ##Definitions
 
@@ -52,6 +42,14 @@ Take the following steps to create a signed Pandexio request.
   - Pandexio::SigningOptions *signing_options* - The details specifying how to sign the *normalized_request*
 - result
   - Pandexio::Request *authorized_request* - A signed request containing information about the request to be made as well as signing information as headers or query string parameters, depending on the *signing_options*.
+
+##Signing a Request
+Take the following steps to create a signed Pandexio request.
+
+1. Create an instance of Pandexio::Request containing details of the request to be made, the *normalized_request*.
+2. Create an instance of Pandexio::SigningOptions. These *signing_options* specify the SDK will sign the request.
+3. Call Pandexio::to_authorized_request, passing in the *normalized_request* and the *signing_options*.
+4. Build an HTTP request using the Pandexio::Request, *authorized_request*, returned by Pandexio::to_authorized_request and make the HTTP request using the HTTP client of choice.
 
 ##All Together
 Here's an example showing the generation of a signed Pandexio request to retrieve an extra large document cover thumbnail for a given document:
