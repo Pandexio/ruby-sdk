@@ -1,4 +1,4 @@
-ruby_sdk
+ruby-sdk
 ========
 
 Pandexio SDK for Ruby
