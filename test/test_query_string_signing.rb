@@ -14,15 +14,16 @@ describe Pandexio do
 
     signing_options = Pandexio::SigningOptions.new(
       :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
-      #:mechanism => Pandexio::SigningMechanisms::HEADER,
       :mechanism => Pandexio::SigningMechanisms::QUERY_STRING,
       :domain_id => "1234567890",
       :domain_key => "asdfjklqwerzxcv",
       :date => date,
       :expires => 90,
+      :originator => "QueryStringSigningTest",
       :email_address => "Anonymous",
       :display_name => "Anonymous")
 
+    @authorized_request = Pandexio::to_authorized_request(normalized_request, signing_options)
     @authorized_request = Pandexio::to_authorized_request(normalized_request, signing_options)
   end
 
@@ -37,7 +38,7 @@ describe Pandexio do
       @authorized_request.query_parameters["X-Pdx-SignedHeaders"].must_equal "host;sample"
     end
     it "returns the correct signature as a query parameter" do
-      @authorized_request.query_parameters["X-Pdx-Signature"].must_equal "d86919fe9e52bcf00e903963566cabcd7d4432c8315bad0eda5edf103ac6317f"
+      @authorized_request.query_parameters["X-Pdx-Signature"].must_equal "6ab83c6a331ba2d684d2557f1e415f3aee86bee105da1f5ad1bc4cc1cdf42f1a"
     end
   end
 end

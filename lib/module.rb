@@ -41,8 +41,9 @@ module Pandexio
     canonical_query_string = StringIO.new
 
     temp_query_parameters.each do |key, value|
+      next if key == SigningAttributes::ALGORITHM || key == SigningAttributes::CREDENTIAL || key == SigningAttributes::SIGNED_HEADERS || key == SigningAttributes::SIGNATURE
       canonical_query_string << "&" if canonical_query_string.length > 0
-      canonical_query_string << "#{key}=#{value}" unless key == SigningAttributes::SIGNATURE
+      canonical_query_string << "#{key}=#{value}"
     end
 
     return canonical_query_string.string
@@ -54,6 +55,7 @@ module Pandexio
     temp_headers = {}
 
     headers.each do |key, value|
+      next if key == SigningAttributes::AUTHORIZATION
       temp_headers[key.downcase.strip] = value
     end
 
@@ -63,6 +65,7 @@ module Pandexio
     canonical_headers, signed_headers = StringIO.new, StringIO.new
 
     temp_headers.each do |key, value|
+      next if key == SigningAttributes::AUTHORIZATION
       canonical_headers << LINE_BREAK if canonical_headers.length > 0
       canonical_headers << "#{key}:#{value}"
       signed_headers << ";" if signed_headers.length > 0
@@ -100,8 +103,6 @@ module Pandexio
     raise ArgumentError, 'normalized_request must be of type Pandexio::Request and cannot be nil' unless !normalized_request.nil? && normalized_request.is_a?(Request)
     raise ArgumentError, 'normalized_request.query_parameters must be of type Hash and cannot be nil' unless !normalized_request.query_parameters.nil? && normalized_request.query_parameters.is_a?(Hash)
     raise ArgumentError, 'normalized_request.headers must be of type Hash and cannot be nil' unless !normalized_request.headers.nil? && normalized_request.headers.is_a?(Hash)
-    raise ArgumentError, 'normalized_request already contains authorization details' unless
-      normalized_request.query_parameters[SigningAttributes::SIGNATURE].nil? && normalized_request.headers[SigningAttributes::AUTHORIZATION].nil?
 
     raise ArgumentError, 'signing_options must be of type Pandexio::SigningOptions cannot be nil' unless !signing_options.nil? && signing_options.is_a?(SigningOptions)
     raise ArgumentError, 'signing_options.domain_id must be of type String and cannot be nil or empty' unless !signing_options.domain_id.nil? && signing_options.domain_id.is_a?(String) && !signing_options.domain_id.empty?
@@ -110,6 +111,7 @@ module Pandexio
     raise ArgumentError, 'signing_options.mechanism must be a valid signing mechanism' unless SigningMechanisms.is_v(signing_options.mechanism)
     raise ArgumentError, 'signing_options.date must be of type Time and cannot be nil' unless !signing_options.date.nil? && signing_options.date.is_a?(Time)
     raise ArgumentError, 'signing_options.expires must be of type Fixnum and cannot be nil or empty' unless !signing_options.expires.nil? && signing_options.expires.is_a?(Fixnum) && signing_options.expires > 0
+    raise ArgumentError, 'signing_options.originator must be of type String and cannot be nil or empty' unless !signing_options.originator.nil? && signing_options.originator.is_a?(String)  && !signing_options.originator.empty?
     raise ArgumentError, 'signing_options.email_address must be of type String and cannot be nil or empty' unless !signing_options.email_address.nil? && signing_options.email_address.is_a?(String)  && !signing_options.email_address.empty?
     raise ArgumentError, 'signing_options.display_name must be of type String and cannot be nil or empty' unless !signing_options.display_name.nil? && signing_options.display_name.is_a?(String)  && !signing_options.display_name.empty?
 
@@ -118,6 +120,7 @@ module Pandexio
     append = -> (p) do
       p[SigningAttributes::DATE] = signing_options.date.iso8601
       p[SigningAttributes::EXPIRES] = signing_options.expires
+      p[SigningAttributes::ORIGINATOR] = signing_options.originator
       p[SigningAttributes::EMAIL_ADDRESS] = signing_options.email_address
       p[SigningAttributes::DISPLAY_NAME] = signing_options.display_name
       p[SigningAttributes::THUMBNAIL] = signing_options.thumbnail if !signing_options.thumbnail.nil? && signing_options.thumbnail.is_a?(String) && !signing_options.thumbnail.empty?
