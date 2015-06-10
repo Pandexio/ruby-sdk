@@ -24,7 +24,6 @@ describe Pandexio do
       :display_name => "Anonymous")
 
     @authorized_request = Pandexio::to_authorized_request(normalized_request, signing_options)
-    @authorized_request = Pandexio::to_authorized_request(normalized_request, signing_options)
   end
 
   describe "#query_string_signing" do
