@@ -22,13 +22,13 @@ module Pandexio
     def self.to_d(a)
 
 	  return case a
-        when SigningAlgorithms::PDX_HMAC_MD5; Digest::MD5
-        when SigningAlgorithms::PDX_HMAC_SHA1; Digest::SHA1
-        when SigningAlgorithms::PDX_HMAC_SHA256; Digest::SHA256
-        when SigningAlgorithms::PDX_HMAC_SHA384; Digest::SHA384
-        when SigningAlgorithms::PDX_HMAC_SHA512; Digest::SHA512
-        else raise 'Invalid signing algorithm'
-        end
+                    when SigningAlgorithms::PDX_HMAC_MD5; OpenSSL::Digest::MD5.new
+                    when SigningAlgorithms::PDX_HMAC_SHA1; OpenSSL::Digest::SHA1.new
+                    when SigningAlgorithms::PDX_HMAC_SHA256; OpenSSL::Digest::SHA256.new
+                    when SigningAlgorithms::PDX_HMAC_SHA384; OpenSSL::Digest::SHA384.new
+                    when SigningAlgorithms::PDX_HMAC_SHA512; OpenSSL::Digest::SHA512.new
+                    else raise 'Invalid signing algorithm'
+                    end
 
     end
 

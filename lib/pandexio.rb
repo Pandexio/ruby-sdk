@@ -1,6 +1,6 @@
 require 'time'
 require 'stringio'
-require 'digest/hmac'
+require 'openssl'
 require_relative 'request.rb'
 require_relative 'signing_algorithms.rb'
 require_relative 'signing_attributes.rb'
@@ -93,7 +93,7 @@ module Pandexio
   end
 
   def self.generate_signature(string_to_sign, signing_options, digest)
-    return Digest::HMAC.hexdigest(string_to_sign, signing_options.domain_key, digest)
+    return OpenSSL::HMAC.hexdigest(digest, signing_options.domain_key, string_to_sign)
   end
 
   public
