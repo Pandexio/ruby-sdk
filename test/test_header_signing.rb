@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require_relative '../lib/module.rb'
+require_relative '../lib/pandexio.rb'
 
 describe Pandexio do
   before do
