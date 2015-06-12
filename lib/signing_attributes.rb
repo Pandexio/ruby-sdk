@@ -16,7 +16,7 @@ module Pandexio
     ORIGINATOR = "X-Pdx-Originator"
     EMAIL_ADDRESS = "X-Pdx-EmailAddress"
     DISPLAY_NAME = "X-Pdx-DisplayName"
-    THUMBNAIL = "X-Pdx-Thumbnail"
+    PROFILE_IMAGE = "X-Pdx-ProfileImage"
   end
 
 end

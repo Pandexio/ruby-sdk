@@ -77,7 +77,8 @@ module Pandexio
   end
 
   def self.build_canonical_payload(payload, digest)
-    return digest.hexdigest(payload)
+    canonical_payload = digest.hexdigest(payload).encode('UTF-8')
+    return canonical_payload;
   end
 
   def self.build_canonical_request(request, digest)
@@ -89,7 +90,8 @@ module Pandexio
   end
 
   def self.build_string_to_sign(canonical_request, signing_options)
-    return "#{signing_options.algorithm}#{LINE_BREAK}#{signing_options.date.iso8601}#{LINE_BREAK}#{canonical_request}"
+    signing_string = "#{signing_options.algorithm}#{LINE_BREAK}#{signing_options.date.iso8601}#{LINE_BREAK}#{canonical_request}".encode('UTF-8')
+    return signing_string
   end
 
   def self.generate_signature(string_to_sign, signing_options, digest)
@@ -123,7 +125,7 @@ module Pandexio
       p[SigningAttributes::ORIGINATOR] = signing_options.originator
       p[SigningAttributes::EMAIL_ADDRESS] = signing_options.email_address
       p[SigningAttributes::DISPLAY_NAME] = signing_options.display_name
-      p[SigningAttributes::THUMBNAIL] = signing_options.thumbnail if !signing_options.thumbnail.nil? && signing_options.thumbnail.is_a?(String) && !signing_options.thumbnail.empty?
+      p[SigningAttributes::PROFILE_IMAGE] = signing_options.profile_image if !signing_options.profile_image.nil? && signing_options.profile_image.is_a?(String) && !signing_options.profile_image.empty?
     end
 
     append.call(

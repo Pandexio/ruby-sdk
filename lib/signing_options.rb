@@ -11,7 +11,7 @@ module Pandexio
       @originator = params.fetch(:originator, nil)
       @email_address = params.fetch(:email_address, nil)
       @display_name = params.fetch(:display_name, nil)
-      @thumbnail = params.fetch(:thumbnail, nil)
+      @profile_image = params.fetch(:profile_image, nil)
     end
 
     attr_accessor :algorithm
@@ -23,7 +23,7 @@ module Pandexio
     attr_accessor :originator
     attr_accessor :email_address
     attr_accessor :display_name
-    attr_accessor :thumbnail
+    attr_accessor :profile_image
 
   end
 
