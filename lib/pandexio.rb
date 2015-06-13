@@ -16,7 +16,7 @@ module Pandexio
 
   def self.ordinal_key_value_sort(a, b)
 
-    a_codepoints, b_codepoints = a[0].codepoints, b[0].codepoints
+    a_codepoints, b_codepoints = a[0].codepoints.to_a, b[0].codepoints.to_a
 
     max_i = [a_codepoints.size, b_codepoints.size].min
 
@@ -35,8 +35,7 @@ module Pandexio
 
     temp_query_parameters = query_parameters.dup
 
-    query_sort = ->(a,b) { ordinal_key_value_sort(a, b) }
-    temp_query_parameters = temp_query_parameters.sort(&query_sort)
+    temp_query_parameters = temp_query_parameters.sort { |a, b| ordinal_key_value_sort(a, b) }
 
     canonical_query_string = StringIO.new
 
@@ -59,8 +58,7 @@ module Pandexio
       temp_headers[key.downcase.strip] = value
     end
 
-    header_sort = ->(a,b) { ordinal_key_value_sort(a, b) }
-    temp_headers = temp_headers.sort(&header_sort)
+    temp_headers = temp_headers.sort { |a, b| ordinal_key_value_sort(a, b) }
 
     canonical_headers, signed_headers = StringIO.new, StringIO.new
 
@@ -119,14 +117,14 @@ module Pandexio
 
     authorized_request = normalized_request.dup
 
-    append = -> (p) do
+    append = lambda { |p|
       p[SigningAttributes::DATE] = signing_options.date.iso8601
       p[SigningAttributes::EXPIRES] = signing_options.expires
       p[SigningAttributes::ORIGINATOR] = signing_options.originator
       p[SigningAttributes::EMAIL_ADDRESS] = signing_options.email_address
       p[SigningAttributes::DISPLAY_NAME] = signing_options.display_name
       p[SigningAttributes::PROFILE_IMAGE] = signing_options.profile_image if !signing_options.profile_image.nil? && signing_options.profile_image.is_a?(String) && !signing_options.profile_image.empty?
-    end
+    }
 
     append.call(
       signing_options.mechanism == SigningMechanisms::QUERY_STRING ? authorized_request.query_parameters :
