@@ -115,7 +115,12 @@ module Pandexio
     raise ArgumentError, 'signing_options.email_address must be of type String and cannot be nil or empty' unless !signing_options.email_address.nil? && signing_options.email_address.is_a?(String)  && !signing_options.email_address.empty?
     raise ArgumentError, 'signing_options.display_name must be of type String and cannot be nil or empty' unless !signing_options.display_name.nil? && signing_options.display_name.is_a?(String)  && !signing_options.display_name.empty?
 
-    authorized_request = normalized_request.dup
+    authorized_request = Pandexio::Request.new(
+      :method => normalized_request.method,
+      :path => normalized_request.path,
+      :query_parameters => normalized_request.query_parameters.clone,
+      :headers => normalized_request.headers.clone,
+      :payload => normalized_request.payload)
 
     append = lambda { |p|
       p[SigningAttributes::DATE] = signing_options.date.iso8601

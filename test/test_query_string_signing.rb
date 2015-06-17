@@ -6,6 +6,52 @@ require_relative '../lib/pandexio.rb'
 describe Pandexio do
   describe "#to_authorized_request" do
 
+    describe "when using query string signing mechanism to generate a new authorized_request from a given normalized_request" do
+
+      before do
+        @normalized_request = Pandexio::Request.new(
+          :method => "PUT",
+          :path => "/asdf/qwer/1234/title",
+          :query_parameters => { "nonce" => "987654321", "Baseline" => "5" },
+          :headers => { "sample" => "example", "Host" => "localhost" },
+          :payload => "testing")
+
+        signing_options = Pandexio::SigningOptions.new(
+          :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
+          :mechanism => Pandexio::SigningMechanisms::QUERY_STRING,
+          :domain_id => "1234567890",
+          :domain_key => "asdfjklqwerzxcv",
+          :date => Time.utc(2014, 11, 21, 13, 43, 15),
+          :expires => 90,
+          :originator => "QueryStringSigningTest",
+          :email_address => "Anonymous",
+          :display_name => "Anonymous")
+
+        @authorized_request = Pandexio::to_authorized_request(@normalized_request, signing_options)
+      end
+
+      it "does not modify the normalized_request method" do
+        @normalized_request.method.must_equal "PUT"
+      end
+      it "does not modify the normalized_request path" do
+        @normalized_request.path.must_equal "/asdf/qwer/1234/title"
+      end
+      it "does not modify the normalized_request query_parameters" do
+        @normalized_request.query_parameters.count.must_equal 2
+        @normalized_request.query_parameters["nonce"].must_equal "987654321"
+        @normalized_request.query_parameters["Baseline"].must_equal "5"
+      end
+      it "does not modify the normalized_request headers" do
+        @normalized_request.headers.count.must_equal 2
+        @normalized_request.headers["sample"].must_equal "example"
+        @normalized_request.headers["Host"].must_equal "localhost"
+      end
+      it "does not modify the normalized_request payload" do
+        @normalized_request.payload.must_equal "testing"
+      end
+
+    end
+
     describe "when using query string signing mechanism and email_address contains uppercase and lowercase characters" do
 
       before do
