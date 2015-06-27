@@ -18,16 +18,16 @@ module Pandexio
 
     a_codepoints, b_codepoints = a[0].codepoints.to_a, b[0].codepoints.to_a
 
-    max_i = [a_codepoints.size, b_codepoints.size].min
+    min = [a_codepoints.length, b_codepoints.length].min - 1
 
-    for i in 0..max_i
+    for i in 0..min
       a_codepoint = a_codepoints[i]
       b_codepoint = b_codepoints[i]
-      return -1 if a_codepoint < b_codepoint
-      return 1 if a_codepoint > b_codepoint
+      c = a_codepoint <=> b_codepoint
+      return c if c != 0
     end
 
-    return 0
+    return a_codepoints.length <=> b_codepoints.length
 
   end
 
