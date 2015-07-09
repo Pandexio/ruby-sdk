@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require 'minitest/autorun'
-require_relative '../lib/pandexio.rb'
+require 'pandexio'
 
 describe Pandexio do
     describe "#to_authorized_request" do

@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require 'minitest/autorun'
-require_relative '../lib/signer.rb'
+require 'pandexio'
 
 describe Pandexio::Signer do
     describe "#scope_and_sign" do

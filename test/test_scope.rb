@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require 'minitest/autorun'
-require_relative '../lib/scope.rb'
+require 'pandexio'
 
 describe Pandexio::Scope do
     describe "#initialize" do

@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require 'minitest/autorun'
-require_relative '../lib/scope_patterns.rb'
+require 'pandexio'
 
 describe Pandexio::ScopePatterns do
 
