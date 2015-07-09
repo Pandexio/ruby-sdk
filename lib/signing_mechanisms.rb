@@ -1,17 +1,17 @@
 module Pandexio
 
-  class SigningMechanisms
+    class SigningMechanisms
 
-    QUERY_STRING = "QueryString"
-    HEADER = "Header"
+        QUERY_STRING = "QueryString"
+        HEADER = "Header"
 
-    def self.is_v(m)
+        def self.is_v(m)
 
-      return !m.nil? && m.is_a?(String) &&
-        (m == QUERY_STRING || m == HEADER)
+            return !m.nil? && m.is_a?(String) &&
+                   (m == QUERY_STRING || m == HEADER)
+
+        end
 
     end
-
-  end
 
 end
