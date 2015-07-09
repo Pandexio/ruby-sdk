@@ -2,6 +2,8 @@ require 'time'
 require 'stringio'
 require 'openssl'
 require_relative 'request.rb'
+require_relative 'scope.rb'
+require_relative 'scope_patterns.rb'
 require_relative 'signing_algorithms.rb'
 require_relative 'signing_attributes.rb'
 require_relative 'signing_mechanisms.rb'
@@ -15,6 +17,24 @@ module Pandexio
         private_constant :LINE_BREAK
 
         private
+
+        def extract_scope(normalized_request)
+            scope = Pandexio::Scope.new()
+
+            match = normalized_request.path.match(Pandexio::ScopePatterns::DOCUMENT_PATH_PATTERN)
+            if !match.nil?
+                document_id = match["documentid"]
+                scope.document_ids.push(document_id)
+            end
+
+            normalized_request.query_parameters.each do |key, value|
+                next if key.casecmp('documentids') != 0
+                document_ids = value.split(',')
+                scope.document_ids.concat(document_ids)
+            end
+
+            return scope
+        end
 
         def ordinal_key_value_sort(a, b)
 
@@ -40,7 +60,10 @@ module Pandexio
             canonical_query_string = StringIO.new
 
             temp_query_parameters.each do |key, value|
-                next if key == SigningAttributes::ALGORITHM || key == SigningAttributes::CREDENTIAL || key == SigningAttributes::SIGNED_HEADERS || key == SigningAttributes::SIGNATURE
+                next if key.casecmp(SigningAttributes::ALGORITHM) == 0 ||
+                        key.casecmp(SigningAttributes::CREDENTIAL) == 0 ||
+                        key.casecmp(SigningAttributes::SIGNED_HEADERS) == 0 ||
+                        key.casecmp(SigningAttributes::SIGNATURE) == 0
                 canonical_query_string << "&" if canonical_query_string.length > 0
                 canonical_query_string << "#{key}=#{value}"
             end
@@ -54,7 +77,7 @@ module Pandexio
             temp_headers = {}
 
             headers.each do |key, value|
-                next if key == SigningAttributes::AUTHORIZATION
+                next if key.casecmp(SigningAttributes::AUTHORIZATION) == 0
                 temp_headers[key.downcase.strip] = value
             end
 
@@ -63,7 +86,6 @@ module Pandexio
             canonical_headers, signed_headers = StringIO.new, StringIO.new
 
             temp_headers.each do |key, value|
-                next if key == SigningAttributes::AUTHORIZATION
                 canonical_headers << LINE_BREAK if canonical_headers.length > 0
                 canonical_headers << "#{key}:#{value}"
                 signed_headers << ";" if signed_headers.length > 0
@@ -158,9 +180,10 @@ module Pandexio
             raise ArgumentError, 'signing_options.email_address must be of type String and cannot be nil or empty' unless !signing_options.email_address.nil? && signing_options.email_address.is_a?(String)    && !signing_options.email_address.empty?
             raise ArgumentError, 'signing_options.display_name must be of type String and cannot be nil or empty' unless !signing_options.display_name.nil? && signing_options.display_name.is_a?(String)    && !signing_options.display_name.empty?
 
+            scope = extract_scope(normalized_request)
             authorized_request = build_authorized_request(normalized_request, signing_options)
 
-            return nil, authorized_request
+            return scope, authorized_request
 
         end
 
