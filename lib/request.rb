@@ -2,6 +2,9 @@ module Pandexio
 
     class Request
 
+        LINE_BREAK = "\r\n"
+        private_constant :LINE_BREAK
+
         def initialize(params = {})
             @method = params.fetch(:method, nil)
             @path = params.fetch(:path, nil)
