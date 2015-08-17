@@ -6,8 +6,8 @@ require 'uuid'
 require "pandexio"
 
 SKIP_INTEGRATION_TESTS = true
-DOMAIN_ID = "<domain_id>"
-DOMAIN_KEY = "<domain_key>"
+DOMAIN_ID = "domain_id"
+DOMAIN_KEY = "domain_key"
 
 describe Pandexio::HttpClient do
     describe "#load_document" do
