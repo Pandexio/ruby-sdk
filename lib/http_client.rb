@@ -3,52 +3,20 @@ require 'json'
 require 'stringio'
 require 'open-uri'
 require_relative 'request.rb'
-require_relative 'scope_patterns.rb'
+require_relative 'signing_options.rb'
 require_relative 'signer.rb'
+require_relative 'scope_patterns.rb'
+require_relative 'signing_algorithms.rb'
 require_relative 'signing_mechanisms.rb'
+require_relative 'ent/document_source.rb'
+require_relative 'ent/document.rb'
 
 module Pandexio
 
-    HOSTED_HOST = "hosted.pandexio.com"
-    PLATFORM_HOST = "platform.pandexio.com"
-
-    class DocumentSource
-
-        def initialize(params = {})
-            @id = params.fetch(:id, nil)
-            @name = params.fetch(:name, nil)
-            @content = params.fetch(:content, nil)
-            @location = params.fetch(:location, nil)
-        end
-
-        attr_accessor :id
-        attr_accessor :name
-        attr_accessor :content
-        attr_accessor :location
-
-    end
-
-    class Document
-
-        def initialize(params = {})
-            @document_id = params.fetch(:document_id, nil)
-            @name = params.fetch(:name, nil)
-            @page_count = params.fetch(:page_count, nil)
-            @content_type = params.fetch(:content_type, nil)
-            @content_length = params.fetch(:content_length, nil)
-            @cover = params.fetch(:cover, nil)
-        end
-
-        attr_accessor :document_id
-        attr_accessor :name
-        attr_accessor :page_count
-        attr_accessor :content_type
-        attr_accessor :content_length
-        attr_accessor :cover
-
-    end
-
     class HttpClient
+
+        HOSTED_HOST = "hosted.pandexio.com"
+        PLATFORM_HOST = "platform.pandexio.com"
 
         private
 

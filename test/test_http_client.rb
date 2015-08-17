@@ -1,18 +1,15 @@
 # encoding: utf-8
 
+require 'minitest/autorun'
 require 'time'
 require 'uuid'
-require 'minitest/autorun'
-#require 'pandexio'
-require_relative 'test_config.rb'
-require_relative '../lib/http_client.rb'
-require_relative '../lib/scope_patterns.rb'
-require_relative '../lib/signing_options.rb'
-require_relative '../lib/signing_algorithms.rb'
-require_relative '../lib/signing_mechanisms.rb'
+require "pandexio"
+
+SKIP_INTEGRATION_TESTS = true
+DOMAIN_ID = "<domain_id>"
+DOMAIN_KEY = "<domain_key>"
 
 describe Pandexio::HttpClient do
-
     describe "#load_document" do
 
         describe "when id is nil" do
@@ -242,7 +239,7 @@ describe Pandexio::HttpClient do
         describe "when content is data URL" do
 
             before do
-                skip("skip integration tests") if TestConfig::SKIP_INTEGRATION_TESTS
+                skip("skip integration tests") if SKIP_INTEGRATION_TESTS
                 @id = UUID.new.generate
                 document_source = Pandexio::DocumentSource.new(
                     :id => @id,
@@ -252,8 +249,8 @@ describe Pandexio::HttpClient do
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::HEADER,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -279,7 +276,7 @@ describe Pandexio::HttpClient do
         describe "when content is HTTP URL" do
 
             before do
-                skip("skip integration tests") if TestConfig::SKIP_INTEGRATION_TESTS
+                skip("skip integration tests") if SKIP_INTEGRATION_TESTS
                 @id = UUID.new.generate
                 document_source = Pandexio::DocumentSource.new(
                     :id => @id,
@@ -289,8 +286,8 @@ describe Pandexio::HttpClient do
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::HEADER,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -410,13 +407,13 @@ describe Pandexio::HttpClient do
         describe "when document does not exist" do
 
             before do
-                skip("skip integration tests") if TestConfig::SKIP_INTEGRATION_TESTS
+                skip("skip integration tests") if SKIP_INTEGRATION_TESTS
                 id = UUID.new.generate
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::HEADER,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -436,7 +433,7 @@ describe Pandexio::HttpClient do
         describe "when document exists" do
 
             before do
-                skip("skip integration tests") if TestConfig::SKIP_INTEGRATION_TESTS
+                skip("skip integration tests") if SKIP_INTEGRATION_TESTS
                 @id = UUID.new.generate
                 document_source = Pandexio::DocumentSource.new(
                     :id => @id,
@@ -446,8 +443,8 @@ describe Pandexio::HttpClient do
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::HEADER,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -455,7 +452,6 @@ describe Pandexio::HttpClient do
                     :display_name => "HttpClientTest")
                 http_client = Pandexio::HttpClient.new()
                 http_client.load_document(document_source, signing_options)
-                sleep(3)
                 @get_document = ->{ http_client.get_document(@id, 'm', signing_options) }
             end
 
@@ -475,7 +471,7 @@ describe Pandexio::HttpClient do
         describe "when cover size is xs" do
 
             before do
-                skip("skip integration tests") if TestConfig::SKIP_INTEGRATION_TESTS
+                skip("skip integration tests") if SKIP_INTEGRATION_TESTS
                 @id = UUID.new.generate
                 document_source = Pandexio::DocumentSource.new(
                     :id => @id,
@@ -485,8 +481,8 @@ describe Pandexio::HttpClient do
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::HEADER,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -494,7 +490,6 @@ describe Pandexio::HttpClient do
                     :display_name => "HttpClientTest")
                 http_client = Pandexio::HttpClient.new()
                 http_client.load_document(document_source, signing_options)
-                sleep(3)
                 @get_document = ->{ http_client.get_document(@id, 'xs', signing_options) }
             end
 
@@ -608,13 +603,13 @@ describe Pandexio::HttpClient do
         describe "when document does not exist" do
 
             before do
-                skip("skip integration tests") if TestConfig::SKIP_INTEGRATION_TESTS
+                skip("skip integration tests") if SKIP_INTEGRATION_TESTS
                 id = UUID.new.generate
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::HEADER,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -634,7 +629,7 @@ describe Pandexio::HttpClient do
         describe "when cover size is xs" do
 
             before do
-                skip("skip integration tests") if TestConfig::SKIP_INTEGRATION_TESTS
+                skip("skip integration tests") if SKIP_INTEGRATION_TESTS
                 @id = UUID.new.generate
                 document_source = Pandexio::DocumentSource.new(
                     :id => @id,
@@ -644,8 +639,8 @@ describe Pandexio::HttpClient do
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::HEADER,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -653,7 +648,6 @@ describe Pandexio::HttpClient do
                     :display_name => "HttpClientTest")
                 http_client = Pandexio::HttpClient.new()
                 http_client.load_document(document_source, signing_options)
-                sleep(3)
                 @get_document_cover = ->{ http_client.get_document_cover(@id, 'xs', signing_options) }
             end
 
@@ -667,7 +661,7 @@ describe Pandexio::HttpClient do
         describe "when cover size is s" do
 
             before do
-                skip("skip integration tests") if TestConfig::SKIP_INTEGRATION_TESTS
+                skip("skip integration tests") if SKIP_INTEGRATION_TESTS
                 @id = UUID.new.generate
                 document_source = Pandexio::DocumentSource.new(
                     :id => @id,
@@ -677,8 +671,8 @@ describe Pandexio::HttpClient do
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::HEADER,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -686,7 +680,6 @@ describe Pandexio::HttpClient do
                     :display_name => "HttpClientTest")
                 http_client = Pandexio::HttpClient.new()
                 http_client.load_document(document_source, signing_options)
-                sleep(3)
                 @get_document_cover = ->{ http_client.get_document_cover(@id, 's', signing_options) }
             end
 
@@ -700,7 +693,7 @@ describe Pandexio::HttpClient do
         describe "when cover size is m" do
 
             before do
-                skip("skip integration tests") if TestConfig::SKIP_INTEGRATION_TESTS
+                skip("skip integration tests") if SKIP_INTEGRATION_TESTS
                 @id = UUID.new.generate
                 document_source = Pandexio::DocumentSource.new(
                     :id => @id,
@@ -710,8 +703,8 @@ describe Pandexio::HttpClient do
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::HEADER,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -719,7 +712,6 @@ describe Pandexio::HttpClient do
                     :display_name => "HttpClientTest")
                 http_client = Pandexio::HttpClient.new()
                 http_client.load_document(document_source, signing_options)
-                sleep(3)
                 @get_document_cover = ->{ http_client.get_document_cover(@id, 'm', signing_options) }
             end
 
@@ -733,7 +725,7 @@ describe Pandexio::HttpClient do
         describe "when cover size is l" do
 
             before do
-                skip("skip integration tests") if TestConfig::SKIP_INTEGRATION_TESTS
+                skip("skip integration tests") if SKIP_INTEGRATION_TESTS
                 @id = UUID.new.generate
                 document_source = Pandexio::DocumentSource.new(
                     :id => @id,
@@ -743,8 +735,8 @@ describe Pandexio::HttpClient do
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::HEADER,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -752,7 +744,6 @@ describe Pandexio::HttpClient do
                     :display_name => "HttpClientTest")
                 http_client = Pandexio::HttpClient.new()
                 http_client.load_document(document_source, signing_options)
-                sleep(3)
                 @get_document_cover = ->{ http_client.get_document_cover(@id, 'l', signing_options) }
             end
 
@@ -766,7 +757,7 @@ describe Pandexio::HttpClient do
         describe "when cover size is xl" do
 
             before do
-                skip("skip integration tests") if TestConfig::SKIP_INTEGRATION_TESTS
+                skip("skip integration tests") if SKIP_INTEGRATION_TESTS
                 @id = UUID.new.generate
                 document_source = Pandexio::DocumentSource.new(
                     :id => @id,
@@ -776,8 +767,8 @@ describe Pandexio::HttpClient do
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::HEADER,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -785,7 +776,6 @@ describe Pandexio::HttpClient do
                     :display_name => "HttpClientTest")
                 http_client = Pandexio::HttpClient.new()
                 http_client.load_document(document_source, signing_options)
-                sleep(3)
                 @get_document_cover = ->{ http_client.get_document_cover(@id, 'xl', signing_options) }
             end
 
@@ -897,8 +887,8 @@ describe Pandexio::HttpClient do
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::HEADER,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -927,8 +917,8 @@ describe Pandexio::HttpClient do
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::QUERY_STRING,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -945,7 +935,7 @@ describe Pandexio::HttpClient do
                 (@document_cover_url.include? "X-Pdx-EmailAddress=HttpClientTest").must_equal true
                 (@document_cover_url.include? "X-Pdx-DisplayName=HttpClientTest").must_equal true
                 (@document_cover_url.include? "X-Pdx-Expires=90").must_equal true
-                (@document_cover_url.include? "X-Pdx-Credential=#{TestConfig::DOMAIN_ID}").must_equal true
+                (@document_cover_url.include? "X-Pdx-Credential=#{DOMAIN_ID}").must_equal true
                 (@document_cover_url.include? "X-Pdx-Signature=").must_equal true
             end
 
@@ -963,8 +953,8 @@ describe Pandexio::HttpClient do
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::QUERY_STRING,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -981,7 +971,7 @@ describe Pandexio::HttpClient do
                 (@document_cover_url.include? "X-Pdx-EmailAddress=HttpClientTest").must_equal true
                 (@document_cover_url.include? "X-Pdx-DisplayName=HttpClientTest").must_equal true
                 (@document_cover_url.include? "X-Pdx-Expires=90").must_equal true
-                (@document_cover_url.include? "X-Pdx-Credential=#{TestConfig::DOMAIN_ID}").must_equal true
+                (@document_cover_url.include? "X-Pdx-Credential=#{DOMAIN_ID}").must_equal true
                 (@document_cover_url.include? "X-Pdx-Signature=").must_equal true
             end
 
@@ -999,8 +989,8 @@ describe Pandexio::HttpClient do
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::QUERY_STRING,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -1017,7 +1007,7 @@ describe Pandexio::HttpClient do
                 (@document_cover_url.include? "X-Pdx-EmailAddress=HttpClientTest").must_equal true
                 (@document_cover_url.include? "X-Pdx-DisplayName=HttpClientTest").must_equal true
                 (@document_cover_url.include? "X-Pdx-Expires=90").must_equal true
-                (@document_cover_url.include? "X-Pdx-Credential=#{TestConfig::DOMAIN_ID}").must_equal true
+                (@document_cover_url.include? "X-Pdx-Credential=#{DOMAIN_ID}").must_equal true
                 (@document_cover_url.include? "X-Pdx-Signature=").must_equal true
             end
 
@@ -1035,8 +1025,8 @@ describe Pandexio::HttpClient do
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::QUERY_STRING,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -1053,7 +1043,7 @@ describe Pandexio::HttpClient do
                 (@document_cover_url.include? "X-Pdx-EmailAddress=HttpClientTest").must_equal true
                 (@document_cover_url.include? "X-Pdx-DisplayName=HttpClientTest").must_equal true
                 (@document_cover_url.include? "X-Pdx-Expires=90").must_equal true
-                (@document_cover_url.include? "X-Pdx-Credential=#{TestConfig::DOMAIN_ID}").must_equal true
+                (@document_cover_url.include? "X-Pdx-Credential=#{DOMAIN_ID}").must_equal true
                 (@document_cover_url.include? "X-Pdx-Signature=").must_equal true
             end
 
@@ -1071,8 +1061,8 @@ describe Pandexio::HttpClient do
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::QUERY_STRING,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -1089,7 +1079,7 @@ describe Pandexio::HttpClient do
                 (@document_cover_url.include? "X-Pdx-EmailAddress=HttpClientTest").must_equal true
                 (@document_cover_url.include? "X-Pdx-DisplayName=HttpClientTest").must_equal true
                 (@document_cover_url.include? "X-Pdx-Expires=90").must_equal true
-                (@document_cover_url.include? "X-Pdx-Credential=#{TestConfig::DOMAIN_ID}").must_equal true
+                (@document_cover_url.include? "X-Pdx-Credential=#{DOMAIN_ID}").must_equal true
                 (@document_cover_url.include? "X-Pdx-Signature=").must_equal true
             end
 
@@ -1177,13 +1167,13 @@ describe Pandexio::HttpClient do
         describe "when document does not exist" do
 
             before do
-                skip("skip integration tests") if TestConfig::SKIP_INTEGRATION_TESTS
+                skip("skip integration tests") if SKIP_INTEGRATION_TESTS
                 id = UUID.new.generate
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::HEADER,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -1203,7 +1193,7 @@ describe Pandexio::HttpClient do
         describe "when document exists" do
 
             before do
-                skip("skip integration tests") if TestConfig::SKIP_INTEGRATION_TESTS
+                skip("skip integration tests") if SKIP_INTEGRATION_TESTS
                 @id = UUID.new.generate
                 document_source = Pandexio::DocumentSource.new(
                     :id => @id,
@@ -1213,8 +1203,8 @@ describe Pandexio::HttpClient do
                 signing_options = Pandexio::SigningOptions.new(
                     :algorithm => Pandexio::SigningAlgorithms::PDX_HMAC_SHA256,
                     :mechanism => Pandexio::SigningMechanisms::HEADER,
-                    :domain_id => TestConfig::DOMAIN_ID,
-                    :domain_key => TestConfig::DOMAIN_KEY,
+                    :domain_id => DOMAIN_ID,
+                    :domain_key => DOMAIN_KEY,
                     :date => Time.now.utc,
                     :expires => 90,
                     :originator => "HttpClientTest",
@@ -1222,7 +1212,6 @@ describe Pandexio::HttpClient do
                     :display_name => "HttpClientTest")
                 http_client = Pandexio::HttpClient.new()
                 http_client.load_document(document_source, signing_options)
-                sleep(3)
                 @get_document_snip_count = ->{ http_client.get_document_snip_count(@id, signing_options) }
             end
 
@@ -1234,5 +1223,4 @@ describe Pandexio::HttpClient do
         end
 
     end
-
 end
