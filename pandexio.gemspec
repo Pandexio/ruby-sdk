@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
     s.name = 'pandexio'
-    s.version = '0.0.10'
+    s.version = '0.0.11'
     s.date = '2015-08-17'
     s.summary = "Signs Pandexio requests using HMAC"
     s.description = "Pandexio SDK for Ruby"
