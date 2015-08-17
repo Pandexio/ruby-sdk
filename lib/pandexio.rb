@@ -1,4 +1,5 @@
 require_relative 'signer.rb'
+require_relative 'http_client.rb'
 
 module Pandexio
 
